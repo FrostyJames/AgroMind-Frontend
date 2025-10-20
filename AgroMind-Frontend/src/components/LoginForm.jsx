@@ -1,8 +1,22 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom"; // ✅ Import navigation hook
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate(); // ✅ Initialize navigation
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    // Optional: basic validation
+    if (email && password) {
+      // Simulate login success
+      navigate("/dashboard");
+    } else {
+      alert("Please enter both email and password.");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-100 via-white to-green-200 flex items-center justify-center px-4">
@@ -12,7 +26,7 @@ export default function LoginForm() {
           Login to your account to access intelligent farming solutions.
         </p>
 
-        <form className="space-y-5">
+        <form className="space-y-5" onSubmit={handleSubmit}> {/* ✅ Add onSubmit */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
             <input
@@ -21,6 +35,7 @@ export default function LoginForm() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
+              required
             />
           </div>
 
@@ -32,6 +47,7 @@ export default function LoginForm() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
+              required
             />
           </div>
 
