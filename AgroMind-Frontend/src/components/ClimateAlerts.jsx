@@ -22,7 +22,7 @@ export default function ClimateAlerts() {
       <h3 className="text-lg font-bold text-green-700 mb-4">Climate Alerts & Tips</h3>
       <div className="space-y-4">
         {alerts.map((alert, index) => (
-          <div key={index} className="bg-red-50 border-l-4 border-red-400 p-4 rounded-md shadow-sm">
+          <div key={index} role="alert" className="bg-red-50 border-l-4 border-red-400 p-4 rounded-md shadow-sm">
             <p className="font-semibold text-red-700">{alert.title}</p>
             <p className="text-sm text-gray-700 mt-1">{alert.description}</p>
           </div>
