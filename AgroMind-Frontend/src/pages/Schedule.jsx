@@ -27,6 +27,7 @@ export default function Schedule() {
     } else {
       updated[dateKey].push(newTask);
 
+
       // 👇 Send to backend
       await addTask({
         crop: extractCropName(newTask),
