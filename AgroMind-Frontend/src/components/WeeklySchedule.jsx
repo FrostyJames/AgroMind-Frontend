@@ -33,10 +33,14 @@ export default function WeeklySchedule() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {Object.entries(grouped).map(([date, taskList], index) => (
             <div key={index} className="bg-white rounded-xl shadow-md p-4">
-              <p className="text-sm text-gray-600">{new Date(date).toDateString()}</p>
+              <p className="text-sm text-gray-600 font-medium mb-2">
+                {new Date(date).toDateString()}
+              </p>
               {taskList.map((task, i) => (
                 <div key={i} className="mb-2">
-                  <p className="font-semibold text-gray-800">{task.activity}</p>
+                  <p className="font-semibold text-gray-800">
+                    {task.activity || "Unnamed Task"}
+                  </p>
                   <p className="text-xs text-gray-500 mt-1">
                     {/* Placeholder weather */}
                     Forecast unavailable
@@ -56,4 +60,4 @@ export default function WeeklySchedule() {
       </a>
     </section>
   );
-}
+} 

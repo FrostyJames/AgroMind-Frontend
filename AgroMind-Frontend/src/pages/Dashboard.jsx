@@ -4,6 +4,7 @@ import FarmDataOverview from "../components/FarmDataOverview";
 import TopCropSuggestion from "../components/TopCropSuggestion";
 import WeeklySchedule from "../components/WeeklySchedule";
 import ClimateAlerts from "../components/ClimateAlerts";
+import RecentActivities from "../components/RecentActivities"; // ✅ added
 
 export default function Dashboard() {
   return (
@@ -22,6 +23,9 @@ export default function Dashboard() {
 
       {/* Weekly Schedule Glance */}
       <WeeklySchedule />
+
+      {/* Recent Activities */}
+      <RecentActivities />
 
       {/* Climate Alerts & Tips */}
       <ClimateAlerts />
