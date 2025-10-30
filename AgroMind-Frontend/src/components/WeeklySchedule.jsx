@@ -3,31 +3,45 @@ import { getTasks } from "../services/taskService";
 
 export default function WeeklySchedule() {
   const [tasks, setTasks] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchTasks = async () => {
       try {
         const data = await getTasks();
-        setTasks(data);
+        if (!Array.isArray(data)) {
+          console.error("Invalid task format:", data);
+          setTasks([]);
+        } else {
+          setTasks(data);
+        }
       } catch (error) {
         console.error("Failed to fetch tasks:", error);
+        setTasks([]);
+      } finally {
+        setLoading(false);
       }
     };
+
     fetchTasks();
   }, []);
 
   // Group tasks by date
-  const grouped = tasks.reduce((acc, task) => {
-    if (!acc[task.date]) acc[task.date] = [];
-    acc[task.date].push(task);
-    return acc;
-  }, {});
+  const grouped = Array.isArray(tasks)
+    ? tasks.reduce((acc, task) => {
+        if (!acc[task.date]) acc[task.date] = [];
+        acc[task.date].push(task);
+        return acc;
+      }, {})
+    : {};
 
   return (
     <section className="mb-8">
       <h3 className="text-lg font-bold text-green-700 mb-4">Weekly Schedule Glance</h3>
 
-      {Object.keys(grouped).length === 0 ? (
+      {loading ? (
+        <p className="text-gray-400">Loading schedule...</p>
+      ) : Object.keys(grouped).length === 0 ? (
         <p className="text-gray-500">No tasks scheduled yet.</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -60,4 +74,4 @@ export default function WeeklySchedule() {
       </a>
     </section>
   );
-} 
+}
