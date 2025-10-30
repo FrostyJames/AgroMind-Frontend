@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { addActivity, getActivities } from "../services/activityService";
 
 export default function Activities() {
   const [activities, setActivities] = useState([]);
@@ -6,26 +7,43 @@ export default function Activities() {
     date: "",
     task: "",
     crop: "",
-    yield: "",
+    yield_: "",
     notes: "",
   });
   const [editIndex, setEditIndex] = useState(null);
+
+  useEffect(() => {
+    getActivities().then(setActivities).catch(console.error);
+  }, []);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleAddActivity = () => {
+  const handleAddActivity = async () => {
+    const newActivity = { ...formData, status: "Completed" };
+
     if (editIndex !== null) {
       const updated = [...activities];
-      updated[editIndex] = { ...formData, status: "Completed" };
+      updated[editIndex] = newActivity;
       setActivities(updated);
       setEditIndex(null);
     } else {
-      const newActivity = { ...formData, status: "Completed" };
       setActivities([newActivity, ...activities]);
+      try {
+        await addActivity(newActivity);
+      } catch (err) {
+        console.error("Failed to save activity:", err);
+      }
     }
-    setFormData({ date: "", task: "", crop: "", yield: "", notes: "" });
+
+    setFormData({
+      date: "",
+      task: "",
+      crop: "",
+      yield_: "",
+      notes: "",
+    });
   };
 
   const handleEdit = (index) => {
@@ -37,7 +55,13 @@ export default function Activities() {
     const updated = activities.filter((_, i) => i !== index);
     setActivities(updated);
     if (editIndex === index) {
-      setFormData({ date: "", task: "", crop: "", yield: "", notes: "" });
+      setFormData({
+        date: "",
+        task: "",
+        crop: "",
+        yield_: "",
+        notes: "",
+      });
       setEditIndex(null);
     }
   };
@@ -45,7 +69,9 @@ export default function Activities() {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-6xl mx-auto px-6">
-        <h1 className="text-3xl font-bold text-green-700 mb-6 text-center">🚜 Activity Tracking</h1>
+        <h1 className="text-3xl font-bold text-green-700 mb-6 text-center">
+          🚜 Activity Tracking
+        </h1>
 
         {/* Log or Edit Activity */}
         <div className="bg-white rounded-lg shadow p-6 mb-8">
@@ -86,8 +112,8 @@ export default function Activities() {
             />
             <input
               type="text"
-              name="yield"
-              value={formData.yield}
+              name="yield_"
+              value={formData.yield_}
               onChange={handleChange}
               placeholder="Yield Estimate (optional)"
               className="border p-2 rounded w-full"
@@ -110,7 +136,9 @@ export default function Activities() {
 
         {/* Activity Table */}
         <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-green-700 mb-4">📋 Recent Activities</h2>
+          <h2 className="text-xl font-semibold text-green-700 mb-4">
+            📋 Recent Activities
+          </h2>
           {activities.length === 0 ? (
             <p className="text-gray-500">No activities logged yet.</p>
           ) : (
@@ -131,7 +159,7 @@ export default function Activities() {
                     <td className="p-2">{activity.date}</td>
                     <td className="p-2">{activity.task}</td>
                     <td className="p-2">{activity.crop || "—"}</td>
-                    <td className="p-2">{activity.yield || "—"}</td>
+                    <td className="p-2">{activity.yield_ || "—"}</td>
                     <td className="p-2">{activity.status}</td>
                     <td className="p-2 space-x-2">
                       <button

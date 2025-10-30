@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
-import { addTask } from "../services/taskService"; // 👈 import backend sync
+import { addTask, getTasks } from "../services/taskService";
 
 export default function Schedule() {
   const [selectedDate, setSelectedDate] = useState(null);
@@ -9,6 +9,29 @@ export default function Schedule() {
   const [newTask, setNewTask] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [editIndex, setEditIndex] = useState(null);
+
+  // 🟢 Fetch tasks from backend on mount
+  useEffect(() => {
+    const fetchAndGroupTasks = async () => {
+      try {
+        const data = await getTasks();
+
+        // Group tasks by date string
+        const grouped = {};
+        data.forEach((task) => {
+          const dateKey = new Date(task.date).toDateString();
+          if (!grouped[dateKey]) grouped[dateKey] = [];
+          grouped[dateKey].push(task.activity);
+        });
+
+        setTasks(grouped);
+      } catch (error) {
+        console.error("Failed to load tasks:", error);
+      }
+    };
+
+    fetchAndGroupTasks();
+  }, []);
 
   const handleDateClick = (date) => {
     setSelectedDate(date);
@@ -27,13 +50,16 @@ export default function Schedule() {
     } else {
       updated[dateKey].push(newTask);
 
-
-      // 👇 Send to backend
-      await addTask({
-        crop: extractCropName(newTask),
-        activity: newTask,
-        date: selectedDate.toISOString().split("T")[0],
-      });
+      // ✅ Sync to backend
+      try {
+        await addTask({
+          crop: extractCropName(newTask),
+          activity: newTask,
+          date: selectedDate.toISOString().split("T")[0],
+        });
+      } catch (error) {
+        console.error("Failed to save task:", error);
+      }
     }
 
     setTasks(updated);
@@ -43,7 +69,6 @@ export default function Schedule() {
   };
 
   const extractCropName = (task) => {
-    // crude crop name extractor: first word after emoji or prefix
     const match = task.match(/(?:🌿|🧑‍🌾)?\s*(Plant|Water|Fertilize)?\s*(\w+)/i);
     return match ? match[2] : "Unknown";
   };
@@ -113,7 +138,10 @@ export default function Schedule() {
                   <div className="font-semibold text-gray-800 mb-2">{dateKey}</div>
                   <ul className="space-y-2">
                     {taskList.map((task, index) => (
-                      <li key={index} className="flex justify-between items-center bg-gray-100 p-2 rounded">
+                      <li
+                        key={index}
+                        className="flex justify-between items-center bg-gray-100 p-2 rounded"
+                      >
                         <span>{task}</span>
                         <div className="space-x-2">
                           <button
