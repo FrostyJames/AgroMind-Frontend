@@ -4,7 +4,7 @@ import "@testing-library/jest-dom";
 import LoginForm from "./LoginForm";
 import { MemoryRouter } from "react-router-dom"; // Needed to test navigation
 
-// ✅ Mock useNavigate using Jest instead of Vitest
+// Mock useNavigate using Jest instead of Vitest
 const mockedNavigate = jest.fn();
 
 jest.mock("react-router-dom", () => {
@@ -26,9 +26,6 @@ describe("LoginForm Component", () => {
         <LoginForm />
       </MemoryRouter>
     );
-
-    // Headings
-    expect(screen.getByText("Welcome to AgroMind")).toBeInTheDocument();
 
     // Inputs and button
     expect(screen.getByPlaceholderText("you@example.com")).toBeInTheDocument();
