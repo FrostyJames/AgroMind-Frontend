@@ -38,7 +38,8 @@ npm install
 ``` bash
 npm run dev
 ```
-
+## Live link
+https://agro-mind-frontend.vercel.app/
 
 ## Running Tests
 This project uses Jest and React Testing Library for testing UI components.
